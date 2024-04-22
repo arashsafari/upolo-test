@@ -16,7 +16,9 @@ class CompanyController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * index
+     *
+     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -25,20 +27,23 @@ class CompanyController extends Controller
         );
 
         return apiResponse()
-            ->message('companies found')
+            ->message('companies list')
             ->data(new CompanyCollection($companies))
             ->send();
     }
 
     /**
-     * Store a newly created resource in storage.
+     * store
+     *
+     * @param StoreCompanyRequest $request
+     * @return JsonResponse
      */
     public function store(StoreCompanyRequest $request): JsonResponse
     {
         $company = $this->companyRepository->create($request->validated());
 
         return apiResponse()
-            ->message('company create successfully')
+            ->message('company created successfully')
             ->data(new CompanyResource($company))
             ->send();
     }
