@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\ContactController;
+use App\Http\Controllers\Api\V1\NoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,4 +26,5 @@ Route::group(['prefix' => 'v1'], function ($router) {
     $router->patch('companies/{company}/add-contact', [CompanyController::class, 'addContact'])->name('companies.add-contact');
     $router->get('companies/{company}/contacts', [CompanyController::class, 'contacts'])->name('companies.contacts');
     $router->apiResource('contacts', ContactController::class)->only('index', 'store', 'show', 'update');
+    $router->post('notes', [NoteController::class, 'store'])->name('contacts.notes.create');
 });
