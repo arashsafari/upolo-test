@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['prefix' => 'v1'], function ($router) {
     $router->apiResource('companies', CompanyController::class)->only('index', 'store');
+    $router->get('companies/search', [CompanyController::class, 'search'])->name('companies.search');
     $router->patch('companies/{company}/add-contact', [CompanyController::class, 'addContact'])->name('companies.add-contact');
     $router->get('companies/{company}/contacts', [CompanyController::class, 'contacts'])->name('companies.contacts');
     $router->apiResource('contacts', ContactController::class)->only('index', 'store', 'show', 'update');

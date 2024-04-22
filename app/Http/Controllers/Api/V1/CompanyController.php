@@ -11,6 +11,7 @@ use App\Http\Resources\CompanyResource;
 use App\Http\Resources\ContactCollection;
 use App\Models\Company;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
@@ -27,6 +28,24 @@ class CompanyController extends Controller
     {
         $companies = $this->companyRepository->paginate(
             perPage: 10
+        );
+
+        return apiResponse()
+            ->message('companies list')
+            ->data(new CompanyCollection($companies))
+            ->send();
+    }
+
+    /**
+     * index
+     *
+     * @return JsonResponse
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $companies = $this->companyRepository->search(
+            perPage: 10,
+            query: $request->all()
         );
 
         return apiResponse()
@@ -58,7 +77,7 @@ class CompanyController extends Controller
      * @param AddContactToCompanyRequest $request
      * @return JsonResponse
      */
-    public function addContact(AddContactToCompanyRequest $request,Company $company): JsonResponse
+    public function addContact(AddContactToCompanyRequest $request, Company $company): JsonResponse
     {
         $company->contacts()->sync($request->contact_id);
 
