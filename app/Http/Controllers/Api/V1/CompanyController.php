@@ -8,6 +8,7 @@ use App\Http\Requests\Api\V1\AddContactToCompanyRequest;
 use App\Http\Requests\Api\V1\StoreCompanyRequest;
 use App\Http\Resources\CompanyCollection;
 use App\Http\Resources\CompanyResource;
+use App\Http\Resources\ContactCollection;
 use App\Models\Company;
 use Illuminate\Http\JsonResponse;
 
@@ -51,7 +52,7 @@ class CompanyController extends Controller
     }
 
     /**
-     * store
+     * addContact
      *
      * @param Company $company
      * @param AddContactToCompanyRequest $request
@@ -63,6 +64,20 @@ class CompanyController extends Controller
 
         return apiResponse()
             ->message('contacts add to company')
+            ->send();
+    }
+
+    /**
+     * contacts
+     *
+     * @param Company $company
+     * @return JsonResponse
+     */
+    public function contacts(Company $company): JsonResponse
+    {
+        return apiResponse()
+            ->message('company contacts')
+            ->data(new ContactCollection($company->contacts))
             ->send();
     }
 }
