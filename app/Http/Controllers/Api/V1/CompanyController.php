@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Contracts\Repositories\CompanyRepositoryInterface;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\AddContactToCompanyRequest;
 use App\Http\Requests\Api\V1\StoreCompanyRequest;
 use App\Http\Resources\CompanyCollection;
 use App\Http\Resources\CompanyResource;
+use App\Models\Company;
 use Illuminate\Http\JsonResponse;
 
 class CompanyController extends Controller
@@ -45,6 +47,22 @@ class CompanyController extends Controller
         return apiResponse()
             ->message('company created successfully')
             ->data(new CompanyResource($company))
+            ->send();
+    }
+
+    /**
+     * store
+     *
+     * @param Company $company
+     * @param AddContactToCompanyRequest $request
+     * @return JsonResponse
+     */
+    public function addContact(AddContactToCompanyRequest $request,Company $company): JsonResponse
+    {
+        $company->contacts()->sync($request->contact_id);
+
+        return apiResponse()
+            ->message('contacts add to company')
             ->send();
     }
 }
