@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Contracts\Repositories\BaseRepositoryInterface;
 
 use App\Exceptions\BadRequestException;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
@@ -98,5 +99,53 @@ abstract class BaseRepository implements BaseRepositoryInterface
     public function findBy(string $field, mixed $value, array $columns = ['*']): ?Model
     {
         return $this->model->where($field, '=', $value)->first($columns);
+    }
+
+    /**
+     * paginate
+     *
+     * @param int $perPage
+     * @param array|string[] $columns
+     * @param array $where
+     * @param array $orWhere
+     * @param array $orderBy
+     * @param bool $withTrashed
+     * @return LengthAwarePaginator
+     */
+    public function paginate(int $perPage = 15, array $columns = ['*'], array $where = [], array $orWhere = [], array $orderBy = [], bool $withTrashed = false): LengthAwarePaginator
+    {
+        $query = $this->model->newQuery();
+
+        if ($withTrashed) {
+            $query->withTrashed();
+        }
+
+        foreach ($where as $field => $value) {
+            if (is_array($value)) {
+                $query->where($field, $value[0], $value[1]);
+                continue;
+            }
+
+            $query->where($field, $value);
+        }
+
+        $query->where(function ($query) use ($orWhere) {
+            foreach ($orWhere as $field => $value) {
+                if (is_array($value)) {
+                    $query->orWhere($field, $value[0], $value[1]);
+                    continue;
+                }
+                $query->orWhere($field, $value);
+            }
+        });
+
+        $orderByColumn = 'created_at';
+        $orderByType = 'desc';
+        if ($orderBy) {
+            $orderByColumn = $orderBy[0] ?? 'created_at';
+            $orderByType = $orderBy[1] ?? 'desc';
+        }
+
+        return $query->orderBy($orderByColumn, $orderByType)->paginate($perPage, $columns);
     }
 }
